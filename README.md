@@ -147,6 +147,27 @@ modelo.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'
 
 ---
 
+6. **En caso de trabajar en Colab**
+
+En una celda nueva, escribe:
+
+```python
+from google.colab import files
+```
+
+Esta librería permite descargar archivos directamente desde el entorno de Colab.
+
+```python
+files.download("perros_gatos_denso.h5")
+files.download("perros_gatos_cnn.h5")
+files.download("perros_gatos_cnn2.h5")
+files.download("mejor_modelo_cnn2.h5")
+```
+
+💡 Esto abrirá automáticamente la ventana de descarga en tu navegador para cada archivo.
+
+---
+
 ## ⚙️ Explicación de términos técnicos
 
 * **CNN (Convolutional Neural Network)**: red neuronal especializada en procesar datos con estructura de cuadrícula (imágenes).
