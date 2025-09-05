@@ -1,24 +1,64 @@
-# Clasificación de imágenes (perros y gatos)
+# 🐶🐱 Clasificación de imágenes (Perros y Gatos)
 
-Este código representa el sitio web, una vez que se crea y entrena el modelo de inteligencia artificial con Python y Tensorflow, el cual es exportado a los archivos "json" y "bin".
-Puede utilizarse en el celular, solo apunta la cámara al perro o gato que quieres clasificar (puede ser una imagen de la computadora, una foto, o uno de verdad), lo hace todo en el explorador utilizando Tensorflow.js.
+Este proyecto implementa un modelo de **inteligencia artificial con TensorFlow y Python**, entrenado para clasificar imágenes de **perros y gatos**.  
+El modelo se exporta a los formatos **`.json`** y **`.bin`**, lo que permite ejecutarlo directamente en el navegador mediante **TensorFlow.js**, sin necesidad de un servidor backend.  
 
-## Cómo utilizarlo
+Puedes usarlo en tu computadora o en tu celular: solo apunta la cámara a un perro o un gato (puede ser una foto en pantalla, una imagen impresa o el animal real) y el sistema mostrará la predicción en tiempo real.
 
-### Descargar el repositorio
+---
 
-Descarga el repositorio donde gustes en tu computadora
+## 🚀 Cómo utilizarlo
 
-### Inicia un servidor en la carpeta
+### 1. Clonar el repositorio
+Ejecuta en tu terminal:
+```bash
+git clone https://github.com/anonymous-17-03/Perros_Gatos.git
+cd Perros_Gatos
+````
 
-Este proyecto utiliza un modelo de Tensorflow.js, el cual para cargarse requiere que el acceso sea por medio de http/https.
-Para eso puedes usar cualquier servidor, pero aquí hay una forma de hacerlo:
-- Descarga Python en tu computadora
-- Abre una línea de comandos o terminal
-- Navega hasta la carpeta donde descargaste el repositorio
-- Ejecuta el comando `python -m http.server 8000`
-- Abre un explorador y ve a http://localhost:8000
+### 2. Iniciar un servidor en la carpeta
 
-### Uso
+Este proyecto utiliza TensorFlow\.js, por lo que los archivos deben servirse vía **HTTP/HTTPS** (no se pueden abrir directamente con doble clic).
 
-Puedes dar clic en el botón de "Cambiar camara" para utilizar la cámara delantera o trasera del celular. Solo apunta la cámara a un perro o gato, y abajo te aparecerá la predicción.
+Puedes usar varios servidores simples:
+
+#### Con Python
+
+```bash
+python -m http.server 8000
+```
+
+#### Con PHP
+
+```bash
+php -S localhost:8000
+```
+
+Luego abre tu navegador en:
+👉 [http://localhost:8000](http://localhost:8000)
+
+---
+
+## 📱 Uso
+
+* Abre la página en tu navegador (PC o celular).
+* Haz clic en **"Cambiar cámara"** para alternar entre cámara frontal y trasera (en caso de usar móvil).
+* Apunta la cámara hacia un perro o un gato.
+* En la parte inferior aparecerá la predicción en tiempo real.
+
+---
+
+## 📂 Archivos principales
+
+* `model.json` y `group*-shard*.bin`: modelo entrenado en TensorFlow exportado a formato TensorFlow\.js.
+* `index.html`: interfaz web para la clasificación.
+* `Logo.png`, `favicon.ico`: recursos gráficos.
+
+---
+
+## ⚡ Tecnologías
+
+* [TensorFlow](https://www.tensorflow.org/) / [TensorFlow.js](https://www.tensorflow.org/js)
+* [Python](https://www.python.org/)
+* [JavaScript](https://developer.mozilla.org/es/docs/Web/JavaScript)
+
