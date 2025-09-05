@@ -1,64 +1,169 @@
-# 🐶🐱 Clasificación de imágenes (Perros y Gatos)
+# 🐶🐱 Clasificación de Imágenes de Perros y Gatos
 
-Este proyecto implementa un modelo de **inteligencia artificial con TensorFlow y Python**, entrenado para clasificar imágenes de **perros y gatos**.  
-El modelo se exporta a los formatos **`.json`** y **`.bin`**, lo que permite ejecutarlo directamente en el navegador mediante **TensorFlow.js**, sin necesidad de un servidor backend.  
+Este proyecto implementa un **modelo de inteligencia artificial** usando **TensorFlow y Python**, entrenado para **clasificar imágenes de perros y gatos**. El modelo también se puede **exportar a TensorFlow\.js**, permitiendo su uso en navegadores sin necesidad de un servidor backend.
 
-Puedes usarlo en tu computadora o en tu celular: solo apunta la cámara a un perro o un gato (puede ser una foto en pantalla, una imagen impresa o el animal real) y el sistema mostrará la predicción en tiempo real.
+El proyecto incluye tres modelos:
+
+* **Denso**: red completamente conectada (MLP).
+* **CNN**: red convolucional básica.
+* **CNN2**: CNN con Dropout y capa densa más grande, normalmente el modelo con mejor desempeño.
+
+Al final del entrenamiento, todos los modelos se guardan, pero el **CNN2** se guarda también automáticamente en su **mejor versión según validación**.
 
 ---
 
-## 🚀 Cómo utilizarlo
+## 🛠️ Requisitos y entorno
 
-### 1. Clonar el repositorio
-Ejecuta en tu terminal:
+### 1. Crear un entorno virtual (recomendado)
+
+```bash
+# Crear entorno virtual llamado venv
+python3 -m venv venv
+
+# Activar entorno en Linux/macOS
+source venv/bin/activate
+
+# Activar entorno en Windows
+venv\Scripts\activate
+```
+
+### 2. Instalar dependencias
+
+```bash
+pip install --upgrade pip
+pip install tensorflow tensorflow-datasets matplotlib tensorflowjs
+```
+
+---
+
+## 🚀 Uso del proyecto
+
+### 1. Clonar repositorio
+
 ```bash
 git clone https://github.com/anonymous-17-03/Perros_Gatos.git
 cd Perros_Gatos
-````
+```
 
-### 2. Iniciar un servidor en la carpeta
+### 2. Entrenamiento del modelo
 
-Este proyecto utiliza TensorFlow\.js, por lo que los archivos deben servirse vía **HTTP/HTTPS** (no se pueden abrir directamente con doble clic).
+```bash
+# Ejecutar script de entrenamiento
+python entrenar_modelo.py
+```
 
-Puedes usar varios servidores simples:
+Este script realiza lo siguiente:
 
-#### Con Python
+1. Descarga y preprocesa el dataset `cats_vs_dogs` de TensorFlow Datasets.
+2. Define y compila tres modelos diferentes: Denso, CNN y CNN2.
+3. Entrena cada modelo usando **EarlyStopping** para evitar sobreentrenamiento.
+4. Guarda los tres modelos en formato `.h5`.
+5. Grafica la precisión y pérdida de validación de los tres modelos para comparación visual.
+
+### 3. Exportar modelo CNN2 a TensorFlow\.js
+
+```bash
+tensorflowjs_converter --input_format=keras \
+    perros_gatos_cnn2.h5 \
+    tfjs_model/
+```
+
+Esto generará una carpeta `tfjs_model` con los archivos necesarios (`model.json` y `group*-shard*.bin`) para usar el modelo directamente en la web.
+
+---
+
+### 4. Servir la interfaz web
+
+Se proporciona un ejemplo en `index.html`. Puedes usar un servidor HTTP simple:
+
+#### Con Python:
 
 ```bash
 python -m http.server 8000
 ```
 
-#### Con PHP
+#### Con PHP:
 
 ```bash
 php -S localhost:8000
 ```
 
-Luego abre tu navegador en:
-👉 [http://localhost:8000](http://localhost:8000)
+Luego abre el navegador en:
+
+```
+http://localhost:8000
+```
 
 ---
 
-## 📱 Uso
+## 📚 Explicación de bloques del código
 
-* Abre la página en tu navegador (PC o celular).
-* Haz clic en **"Cambiar cámara"** para alternar entre cámara frontal y trasera (en caso de usar móvil).
-* Apunta la cámara hacia un perro o un gato.
-* En la parte inferior aparecerá la predicción en tiempo real.
+1. **Descarga y preprocesamiento del dataset**
+
+```python
+datos, metadatos = tfds.load('cats_vs_dogs', as_supervised=True, with_info=True)
+```
+
+* Descarga automáticamente el dataset de Kaggle.
+* Convierte las imágenes a **grayscale** y normaliza los píxeles a `[0,1]`.
+* Divide el dataset en **train** (85%) y **validation** (15%).
+
+> ⚠️ `grayscale` reduce complejidad y memoria. La CNN sigue aprendiendo patrones de forma eficiente.
 
 ---
 
-## 📂 Archivos principales
+2. **Definición de modelos**
 
-* `model.json` y `group*-shard*.bin`: modelo entrenado en TensorFlow exportado a formato TensorFlow\.js.
-* `index.html`: interfaz web para la clasificación.
-* `Logo.png`, `favicon.ico`: recursos gráficos.
+* **Denso**: todo conectado, bueno para problemas pequeños pero limitado en imágenes.
+* **CNN**: utiliza capas convolucionales para extraer características espaciales de las imágenes.
+* **CNN2**: CNN con **Dropout** (previene overfitting) y capa densa más grande (250 neuronas), normalmente con mejor desempeño.
 
 ---
 
-## ⚡ Tecnologías
+3. **Compilación**
 
-* [TensorFlow](https://www.tensorflow.org/) / [TensorFlow.js](https://www.tensorflow.org/js)
-* [Python](https://www.python.org/)
-* [JavaScript](https://developer.mozilla.org/es/docs/Web/JavaScript)
+```python
+modelo.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+```
 
+* **Optimizer Adam**: ajusta los pesos de la red automáticamente.
+* **Binary crossentropy**: función de pérdida para problemas de clasificación binaria.
+* **Accuracy**: métrica para evaluar desempeño en clasificación.
+
+---
+
+4. **Callbacks**
+
+* **EarlyStopping**: detiene entrenamiento si la validación no mejora, evitando sobreajuste y ahorro de tiempo.
+* **ModelCheckpoint**: guarda automáticamente la mejor versión del modelo CNN2 según validación.
+* **TensorBoard**: permite visualizar gráficas de entrenamiento en tiempo real.
+
+---
+
+5. **Entrenamiento y gráficos**
+
+* Entrena los modelos y genera **gráficas comparativas** de precisión y pérdida en validación.
+* Esto permite ver visualmente que **CNN2 suele ser superior** a Denso y CNN simples.
+
+---
+
+## ⚙️ Explicación de términos técnicos
+
+* **CNN (Convolutional Neural Network)**: red neuronal especializada en procesar datos con estructura de cuadrícula (imágenes).
+* **Dropout**: técnica que desactiva neuronas aleatorias durante entrenamiento para mejorar generalización.
+* **EarlyStopping**: detiene el entrenamiento cuando no hay mejoras en la validación, evitando overfitting.
+* **Overfitting**: cuando el modelo aprende demasiado los datos de entrenamiento y falla en generalizar a nuevos datos.
+* **Normalización**: ajustar valores de píxeles de `[0,255]` a `[0,1]` para que el entrenamiento sea más estable.
+
+---
+
+## ✅ Conclusión
+
+Este proyecto demuestra cómo construir y entrenar **modelos de IA para clasificación de imágenes**, mostrando:
+
+* Cómo preprocesar datos con TensorFlow Datasets.
+* Diferencias entre **redes densas y convolucionales**.
+* Cómo **guardar modelos, aplicar callbacks y visualizar métricas**.
+* Cómo convertir el modelo entrenado a **TensorFlow\.js** para uso en web.
+
+La combinación de **CNN2 + Dropout** ofrece un modelo balanceado, eficiente y listo para producción.
